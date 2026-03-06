@@ -11,7 +11,7 @@ The project focuses on building a responsive, component-based React application 
 ![alt text](image.png)
 
 # Live Site
-https://rita-ip-address-tracker.netlify.app/
+https://ip-address-track-app.netlify.app/
 
 # GitHub Repository
 https://github.com/ritanayak/ip-address-tracker
