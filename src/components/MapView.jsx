@@ -1,33 +1,30 @@
-import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
-import { useEffect } from "react";
-import "leaflet/dist/leaflet.css";
+import { useEffect, useRef } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
-//Component responsible for updating the map center dynamically whenever coordinates change.
-function ChangeView({ center }) {
-  const map = useMap();
+export default function MapView({ data, children }) {
+  const mapRef = useRef(null);
 
   useEffect(() => {
-    if (center) {
-      map.setView(center, 13);//Update map view
-    }
-  }, [center, map]);
+    if (!mapRef.current) {
+      mapRef.current = L.map('map', { scrollWheelZoom: false }).setView([0, 0], 2);
 
-  return null;
-}
-//Displays marker only when data is available.
-export default function MapView({ data }) {
-  const center = data
-    ? [data.location.lat, data.location.lng]
-    : [0, 0]; // Default world view
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(mapRef.current);
+    }
+
+    if (data) {
+      const { lat, lng } = data.location;
+      mapRef.current.setView([lat, lng], 13);
+
+      L.marker([lat, lng]).addTo(mapRef.current);
+    }
+  }, [data]);
 
   return (
-    <MapContainer center={center} zoom={2} style={{ height: "400px" }}>
-      <TileLayer
-        attribution="&copy; OpenStreetMap contributors"
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      {data && <Marker position={center} />} {/* Render marker only when data exists */}
-      <ChangeView center={center} /> {/* Update map position dynamically */}
-    </MapContainer>
+    <div id="map">
+      {children && children} {/* Optional children inside the map container */}
+    </div>
   );
 }
